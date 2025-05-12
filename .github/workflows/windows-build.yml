@@ -1,0 +1,51 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # 允许手动触发
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+      
+    - name: Install Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_mingw'
+        tools: 'tools_mingw,qt.tools.win64_mingw900'
+        
+    - name: Configure CMake
+      run: |
+        mkdir build
+        cd build
+        cmake .. -G "MinGW Makefiles"
+      
+    - name: Build
+      run: |
+        cd build
+        cmake --build . --config Release
+        
+    - name: Deploy Qt Dependencies
+      run: |
+        cd build/bin
+        windeployqt --qmldir ${{ github.workspace }}/src navigation_system.exe
+        
+    - name: Create ZIP Archive
+      run: |
+        cd build/bin
+        7z a -tzip ${{ github.workspace }}/navigation_system_windows.zip *
+        
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: navigation-system-windows
+        path: navigation_system_windows.zip
