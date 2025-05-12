@@ -21,7 +21,7 @@ jobs:
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
-        modules: 'qtwidgets'
+        modules: 'qt6.widgets'
         tools: 'tools_cmake tools_ninja'
         
     - name: 设置MSVC环境
