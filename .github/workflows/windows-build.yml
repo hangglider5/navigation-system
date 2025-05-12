@@ -1,0 +1,60 @@
+name: Windows Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:  # 允许手动触发工作流
+
+jobs:
+  build:
+    runs-on: windows-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: 设置Qt
+      uses: jurplel/install-qt-action@v3
+      with:
+        version: '6.5.0'
+        host: 'windows'
+        target: 'desktop'
+        arch: 'win64_msvc2019_64'
+        modules: 'qtwidgets'
+        tools: 'tools_cmake tools_ninja'
+        
+    - name: 设置MSVC环境
+      uses: ilammy/msvc-dev-cmd@v1
+      with:
+        arch: x64
+        
+    - name: 创建构建目录
+      run: mkdir build
+      
+    - name: 配置CMake
+      working-directory: build
+      run: |
+        cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+        
+    - name: 构建项目
+      working-directory: build
+      run: |
+        cmake --build . --config Release
+        
+    - name: 部署Qt依赖
+      working-directory: build/bin
+      run: |
+        windeployqt --qmldir ../../src navigation_system.exe
+        
+    - name: 打包构建产物
+      working-directory: build
+      run: |
+        mkdir -p package
+        cp -r bin package/
+        
+    - name: 上传构建产物
+      uses: actions/upload-artifact@v3
+      with:
+        name: navigation-system-windows
+        path: build/package
