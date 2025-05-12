@@ -1,0 +1,65 @@
+name: Build Windows Executable
+
+# 工作流程触发条件：
+# - 当有推送 (push) 到 main 分支时
+# - 当有拉取请求 (pull request) 指向 main 分支时
+# 您可以根据需要修改分支名称
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-windows:
+    # 指定运行此作业的操作系统环境
+    runs-on: windows-latest
+
+    steps:
+      # 第一步：检出您的仓库代码
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 第二步：安装 Qt
+      # 使用 jurplel/install-qt-action 来简化 Qt 的安装和配置
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v3
+        with:
+          # 指定您项目所需的 Qt 版本。Qt 6.5.3 是一个较新的稳定版本。
+          version: '6.5.3'
+          # 指定 Qt 模块，根据您的 CMakeLists.txt，这里是 'widgets'
+          modules: 'widgets'
+          # 指定架构。对于 Qt6 和 MSVC 2019，通常使用 'win64_msvc2019_64'。
+          # 此操作会自动选择合适的 MSVC 版本与 Qt 配合。
+          arch: 'win64_msvc2019_64'
+
+      # 第三步：配置 CMake 项目
+      # 使用 cmd shell，因为 Qt 安装程序通常会为 cmd 设置 MSVC 环境变量
+      - name: Configure CMake
+        shell: cmd
+        run: |
+          REM -S . 指定源代码目录为当前目录
+          REM -B build 指定构建目录为 'build'
+          REM -G "Visual Studio 16 2019" 指定使用 Visual Studio 2019 作为生成器
+          REM -A x64 指定目标平台为 64 位
+          cmake -S . -B build -G "Visual Studio 16 2019" -A x64
+
+      # 第四步：使用 CMake 构建项目
+      # --config Release 指定构建 Release 版本
+      - name: Build with CMake
+        shell: cmd
+        run: |
+          cmake --build build --config Release
+
+      # 第五步：上传构建产物 (Artifact)
+      # 构建完成后，可执行文件和相关依赖 (由 CMakeLists.txt 中的 windeployqt 处理)
+      # 将位于 build/bin/Release/ 目录下。
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          # 上传的产物名称
+          name: NavigationSystem-Windows
+          # 需要上传的路径。
+          # 您的 CMakeLists.txt 设置 CMAKE_RUNTIME_OUTPUT_DIRECTORY 为 ${CMAKE_BINARY_DIR}/bin。
+          # 对于 Visual Studio (多配置) 生成器，Release 版本会输出到 ${CMAKE_BINARY_DIR}/bin/Release/。
+          path: build/bin/Release/
