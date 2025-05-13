@@ -59,8 +59,18 @@ if(WIN32)
     # 添加Windows特定的库
     target_link_libraries(navigation_system PRIVATE ws2_32)
     
-    # 确保正确部署Qt DLL - 修改这部分，不再检查CMAKE_BUILD_TYPE
-    # 在GitHub Actions中，使用Multi-config生成器时，CMAKE_BUILD_TYPE可能为空
+    # 增加链接器的堆栈大小
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} /STACK:10000000")
+    
+    # 使用响应文件来处理长命令行
+    set(CMAKE_C_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+    set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_OBJECTS 1)
+    set(CMAKE_C_USE_RESPONSE_FILE_FOR_INCLUDES 1)
+    set(CMAKE_CXX_USE_RESPONSE_FILE_FOR_INCLUDES 1)
+    set(CMAKE_C_RESPONSE_FILE_LINK_FLAG "@")
+    set(CMAKE_CXX_RESPONSE_FILE_LINK_FLAG "@")
+    
+    # 确保正确部署Qt DLL
     add_custom_command(TARGET navigation_system POST_BUILD
         COMMAND ${CMAKE_COMMAND} -E echo "正在部署Qt依赖..."
         COMMAND windeployqt --qmldir ${CMAKE_SOURCE_DIR}/src $<TARGET_FILE:navigation_system>

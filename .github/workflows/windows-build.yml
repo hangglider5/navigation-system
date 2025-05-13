@@ -34,12 +34,12 @@ jobs:
     - name: 配置CMake
       working-directory: build
       run: |
-        cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release
+        cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/MP /EHsc /bigobj" -DCMAKE_EXE_LINKER_FLAGS="/INCREMENTAL:NO"
         
     - name: 构建项目
       working-directory: build
       run: |
-        cmake --build . --config Release --verbose
+        cmake --build . --config Release --verbose --parallel
         
     - name: 检查构建产物
       working-directory: build
