@@ -84,6 +84,6 @@ private:
     
     NavigationSystem* navSystem;
     MapWidget* mapWidget;
-};
+}; // <-- 添加分号
 
 #endif // MAINWINDOW_H
