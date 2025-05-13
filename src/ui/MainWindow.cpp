@@ -310,7 +310,7 @@ void MainWindow::addRandomCars(int count) {
     // 随机生成器
     std::random_device rd;
     std::mt19937 gen(rd());
-    std::uniform_int_distribution<> dist(0, allPoints.size() - 1);
+    std::uniform_int_distribution<> dist(0, static_cast<int>(allPoints.size() - 1));
     
     // 添加随机车辆
     for (int i = 0; i < count; i++) {
