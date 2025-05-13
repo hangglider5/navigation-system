@@ -71,8 +71,8 @@ if(WIN32)
     set(CMAKE_CXX_RESPONSE_FILE_LINK_FLAG "@")
     
     # 确保正确部署Qt DLL
-    add_custom_command(TARGET navigation_system POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "正在部署Qt依赖..."
-        COMMAND windeployqt --qmldir ${CMAKE_SOURCE_DIR}/src $<TARGET_FILE:navigation_system>
-    )
+    # add_custom_command(TARGET navigation_system POST_BUILD
+    #     COMMAND ${CMAKE_COMMAND} -E echo "正在部署Qt依赖..."
+    #     COMMAND windeployqt --qmldir ${CMAKE_SOURCE_DIR}/src $<TARGET_FILE:navigation_system>
+    # )
 endif()
