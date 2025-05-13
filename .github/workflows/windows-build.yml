@@ -49,7 +49,7 @@ jobs:
     - name: 部署Qt依赖
       working-directory: build/bin
       run: |
-        windeployqt --verbose --no-translations --qmldir ../../src navigation_system.exe
+        windeployqt --verbose 1 --no-translations --qmldir ../../src navigation_system.exe
         
     - name: 打包构建产物
       working-directory: build
