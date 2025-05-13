@@ -59,12 +59,10 @@ if(WIN32)
     # 添加Windows特定的库
     target_link_libraries(navigation_system PRIVATE ws2_32)
     
-    # 确保正确部署Qt DLL
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        # 使用windeployqt工具部署Qt依赖
-        add_custom_command(TARGET navigation_system POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E echo "正在部署Qt依赖..."
-            COMMAND windeployqt --qmldir ${CMAKE_SOURCE_DIR}/src $<TARGET_FILE:navigation_system>
-        )
-    endif()
+    # 确保正确部署Qt DLL - 修改这部分，不再检查CMAKE_BUILD_TYPE
+    # 在GitHub Actions中，使用Multi-config生成器时，CMAKE_BUILD_TYPE可能为空
+    add_custom_command(TARGET navigation_system POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "正在部署Qt依赖..."
+        COMMAND windeployqt --qmldir ${CMAKE_SOURCE_DIR}/src $<TARGET_FILE:navigation_system>
+    )
 endif()
