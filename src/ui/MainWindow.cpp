@@ -17,7 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(nullptr) {
 
     // 初始化导航系统
-    int numPoints = 1000;
+    int numPoints = 10000;
     int viewportWidth = 800;
     int viewportHeight = 600;
     navSystem = new NavigationSystem(numPoints, viewportWidth, viewportHeight);
