@@ -1,64 +1,109 @@
-name: Windows Build
+name: Build Windows Executable
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, master ]
   pull_request:
-    branches: [ main ]
-  workflow_dispatch:  # 允许手动触发工作流
+    branches: [ main, master ]
+  workflow_dispatch:
 
 jobs:
-  build:
+  build-windows:
     runs-on: windows-latest
     
     steps:
-    - uses: actions/checkout@v3
+    - name: 检出代码
+      uses: actions/checkout@v4
     
-    - name: 设置Qt
+    - name: 设置Qt环境
       uses: jurplel/install-qt-action@v3
       with:
-        version: '6.5.0'
+        version: '6.5.3'
         host: 'windows'
         target: 'desktop'
         arch: 'win64_msvc2019_64'
         tools: 'tools_cmake tools_ninja'
+        cache: true
         
     - name: 设置MSVC环境
       uses: ilammy/msvc-dev-cmd@v1
       with:
         arch: x64
         
-    - name: 创建构建目录
-      run: mkdir build
+    - name: 清理并创建构建目录
+      run: |
+        # 清理可能存在的目录
+        if (Test-Path "build") {
+          Remove-Item -Path "build" -Recurse -Force
+        }
+        if (Test-Path "release") {
+          Remove-Item -Path "release" -Recurse -Force
+        }
+        # 创建新目录
+        New-Item -ItemType Directory -Path "build" -Force
+        New-Item -ItemType Directory -Path "release" -Force
       
     - name: 配置CMake
       working-directory: build
       run: |
-        cmake .. -G "Ninja" -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="/MP /EHsc /bigobj" -DCMAKE_EXE_LINKER_FLAGS="/INCREMENTAL:NO" -DCMAKE_NINJA_FORCE_RESPONSE_FILE=TRUE
+        cmake .. -G "Ninja" `
+          -DCMAKE_BUILD_TYPE=Release `
+          -DCMAKE_CXX_FLAGS="/MP /EHsc /bigobj" `
+          -DCMAKE_EXE_LINKER_FLAGS="/INCREMENTAL:NO" `
+          -DCMAKE_NINJA_FORCE_RESPONSE_FILE=TRUE
         
     - name: 构建项目
       working-directory: build
       run: |
-        cmake --build . --config Release --verbose --parallel
+        cmake --build . --config Release --parallel
         
     - name: 检查构建产物
       working-directory: build
       run: |
-        dir bin
+        Get-ChildItem -Path "bin" -Recurse
+        if (Test-Path "bin/navigation_system.exe") {
+          Write-Host "✅ 可执行文件构建成功"
+          Get-Item "bin/navigation_system.exe" | Select-Object Name, Length, LastWriteTime
+        } else {
+          Write-Host "❌ 可执行文件未找到"
+          Write-Host "当前bin目录内容："
+          Get-ChildItem -Path "bin" -Force
+          exit 1
+        }
         
     - name: 部署Qt依赖
       working-directory: build/bin
       run: |
-        windeployqt --verbose 1 --no-translations --qmldir ../../src navigation_system.exe
+        windeployqt --verbose 2 --no-translations --no-system-d3d-compiler --no-opengl-sw navigation_system.exe
         
-    - name: 打包构建产物
-      working-directory: build
+    - name: 创建发布包
       run: |
-        mkdir -p package
-        cp -r bin package/
+        # 复制可执行文件和依赖
+        Copy-Item -Path "build/bin/*" -Destination "release/" -Recurse -Force
+        
+        # 创建版本信息
+        $version = $env:GITHUB_SHA.Substring(0,7)
+        "Navigation System v$version" | Out-File -FilePath "release/VERSION.txt" -Encoding UTF8
+        
+        # 创建使用说明
+        @"
+# 导航系统 Navigation System
+
+## 运行说明
+1. 双击 navigation_system.exe 启动程序
+2. 确保所有 .dll 文件与可执行文件在同一目录
+
+## 系统要求
+- Windows 10 或更高版本
+- Visual C++ Redistributable 2019 或更高版本
+
+构建版本: $version
+构建时间: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')
+"@ | Out-File -FilePath "release/README.txt" -Encoding UTF8
         
     - name: 上传构建产物
       uses: actions/upload-artifact@v4
       with:
-        name: navigation-system-windows
-        path: build/package
+        name: navigation-system-windows-${{ github.sha }}
+        path: release/
+        retention-days: 30
