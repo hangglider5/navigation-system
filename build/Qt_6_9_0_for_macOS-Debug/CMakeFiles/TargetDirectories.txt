@@ -1,0 +1,5 @@
+/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Debug/CMakeFiles/navigation_system.dir
+/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Debug/CMakeFiles/edit_cache.dir
+/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Debug/CMakeFiles/rebuild_cache.dir
+/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Debug/CMakeFiles/navigation_system_autogen_timestamp_deps.dir
+/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Debug/CMakeFiles/navigation_system_autogen.dir

@@ -1,0 +1,19 @@
+# ninja log v6
+1	3377	1749040684308257151	navigation_system_autogen/timestamp	c40dda4c6068180e
+1	3377	1749040684308257151	navigation_system_autogen/mocs_compilation.cpp	c40dda4c6068180e
+1	3377	1749040684308257151	/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Release/navigation_system_autogen/timestamp	c40dda4c6068180e
+1	3377	1749040684308257151	/Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Release/navigation_system_autogen/mocs_compilation.cpp	c40dda4c6068180e
+3379	3538	1749040684318865503	CMakeFiles/navigation_system.dir/src/core/Point.cpp.o	ae62b4edaf751106
+3380	3540	1749040684319644049	CMakeFiles/navigation_system.dir/src/core/Road.cpp.o	af86b7203e6e561
+3383	4058	1749040684324554160	CMakeFiles/navigation_system.dir/src/algorithms/TrafficSimulator.cpp.o	d170fd5f526f26b4
+3540	4250	1749040684480289535	CMakeFiles/navigation_system.dir/src/ui/MapRenderer.cpp.o	bdccd29f8433b06d
+3381	4337	1749040684320781972	CMakeFiles/navigation_system.dir/src/algorithms/KDTree.cpp.o	7eeaf066f1bb529
+3379	4388	1749040684318661335	CMakeFiles/navigation_system.dir/src/core/Map.cpp.o	1b51da858813adb
+3382	4415	1749040684322185355	CMakeFiles/navigation_system.dir/src/algorithms/PathFinder.cpp.o	cf4b6127a769d80c
+3378	4439	1749040684318444042	CMakeFiles/navigation_system.dir/src/app/NavigationSystem.cpp.o	bbdfa07a76669d52
+3381	4688	1749040684321253766	CMakeFiles/navigation_system.dir/src/algorithms/MapGenerator.cpp.o	e30a9ba7a662556a
+3378	4787	1749040684318276166	CMakeFiles/navigation_system.dir/navigation_system_autogen/mocs_compilation.cpp.o	d81738cf0d201fd2
+3379	4894	1749040684318555084	CMakeFiles/navigation_system.dir/src/app/main.cpp.o	cfc0f423d729b469
+4059	5032	1749040684998618908	CMakeFiles/navigation_system.dir/src/ui/MapWidget.cpp.o	8694e4c8141c1f29
+3538	5101	1749040684477913605	CMakeFiles/navigation_system.dir/src/ui/MainWindow.cpp.o	9028704a6ea78d92
+5101	5211	1749040686040922063	bin/navigation_system.app/Contents/MacOS/navigation_system	f9d310f79960552c

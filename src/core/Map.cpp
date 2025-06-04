@@ -35,7 +35,7 @@ void Map::addRoad(Road* road) {
     int endId = road->getEndPoint()->getId();
     
     adjacencyList[startId].push_back(road);
-    // 假设道路是双向的，也可以根据需要修改为单向
+    // 假设道路是双向的
     adjacencyList[endId].push_back(road);
 }
 

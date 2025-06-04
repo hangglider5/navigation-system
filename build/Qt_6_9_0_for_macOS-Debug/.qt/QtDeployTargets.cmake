@@ -1,0 +1,2 @@
+set(__QT_DEPLOY_TARGET_navigation_system_FILE /Users/kennyliang/Desktop/导航系统 9/build/Qt_6_9_0_for_macOS-Debug/bin/navigation_system.app/Contents/MacOS/navigation_system)
+set(__QT_DEPLOY_TARGET_navigation_system_TYPE EXECUTABLE)

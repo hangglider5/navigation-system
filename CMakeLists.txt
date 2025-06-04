@@ -37,6 +37,7 @@ file(GLOB_RECURSE UI_HEADERS "src/ui/*.h")
 
 # 创建可执行文件
 add_executable(navigation_system
+    MACOSX_BUNDLE # <--- 确保添加或存在这一行
     ${APP_SOURCES}
     ${CORE_SOURCES}
     ${ALGORITHMS_SOURCES}

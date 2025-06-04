@@ -5,7 +5,7 @@ Road::Road(int id, Point* start, Point* end) :
     id(id), 
     startPoint(start), 
     endPoint(end), 
-    capacity(100),  // 默认容量值
+    capacity(5),  // 默认容量值
     currentCars(0)  // 初始车辆数为0
 {
     // 计算道路长度为两点之间的距离

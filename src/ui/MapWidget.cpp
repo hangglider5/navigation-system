@@ -90,7 +90,7 @@ void MapWidget::setCongestionThreshold(double threshold) {
 QColor MapWidget::getTrafficColor(double congestionLevel) const {
     // 根据拥堵程度返回不同的颜色
     // 绿色 -> 黄色 -> 红色
-    if (congestionLevel < 0.3) {
+    if (congestionLevel < 0.2) {
         // 畅通 - 绿色
         return QColor(0, 255, 0);
     } else if (congestionLevel < congestionThreshold) {
@@ -156,25 +156,21 @@ void MapWidget::paintEvent(QPaintEvent *event) {
             // 计算道路中点位置
             double midX = (start->getX() + end->getX()) / 2;
             double midY = (start->getY() + end->getY()) / 2;
-            
-            // 显示当前车辆数/容量
-            // QString trafficText = QString("%1/%2").arg(road->getCurrentCars()).arg(road->getCapacity());
-            // painter.drawText(midX, midY, trafficText); // <--- 注释掉此行以移除车流量文本
         }
     }
     
     // 绘制所有点 (常规)
     painter.setPen(Qt::black); 
-    painter.setBrush(Qt::blue); 
+    painter.setBrush(Qt::black); 
     for (const auto& point : displayPoints) {
         if (point) {
             painter.drawEllipse(QPointF(point->getX(), point->getY()), 3, 3); 
         }
     }
 
-    // 新增：绘制最短路径
+    // 绘制最短路径
     if (hasShortestPath) {
-        // 绘制路径上的道路 (例如，绿色加粗)
+        // 绘制路径上的道路 
         painter.setPen(QPen(Qt::green, 4)); // 路径道路颜色和宽度
         for (const auto& road : this->pathRoads) { // 修改: shortestPathRoads -> this->pathRoads
             if (road && road->getStartPoint() && road->getEndPoint()) {
@@ -184,7 +180,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
             }
         }
 
-        // 绘制路径上的点 (例如，绿色大一点)
+        // 绘制路径上的点 
         painter.setPen(Qt::black);
         painter.setBrush(Qt::green); // 路径点填充颜色
         for (const auto& point : this->pathPoints) { // 修改: shortestPathPoints -> this->pathPoints
@@ -201,7 +197,7 @@ void MapWidget::paintEvent(QPaintEvent *event) {
         painter.drawEllipse(this->specialPoint, 5, 5); // 修改: specialMarkedPoint -> this->specialPoint
     }
     
-    // 新增：绘制路径的起点和终点 (红色)
+    // 绘制路径的起点和终点 (红色)
     if (hasPathEndpoints && hasShortestPath && !this->pathPoints.empty()) {
         painter.setPen(QPen(Qt::black, 1));
         painter.setBrush(Qt::red);

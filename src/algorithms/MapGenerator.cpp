@@ -48,10 +48,12 @@ std::vector<Point*> MapGenerator::generateRandomPoints() const {
     return points;
 }
 
+const int MAX_CONNECTIONS_PER_POINT = 3; // 定义每个点最多连接到最近的N个点
+
 void MapGenerator::createRoads(Map* map, std::vector<Point*>& points) const {
-    std::random_device rd;
-    std::mt19937 gen(rd());
-    std::uniform_int_distribution<> connectionsDist(2, 5); // 每个点连接2-5条道路
+    // std::random_device rd; // 如果不再需要随机连接数，可以移除
+    // std::mt19937 gen(rd()); // 如果不再需要随机连接数，可以移除
+    // std::uniform_int_distribution<> connectionsDist(2, 5); // 每个点连接2-5条道路 - 这行将被修改或移除
     
     int roadId = 0;
     
@@ -92,7 +94,7 @@ void MapGenerator::createRoads(Map* map, std::vector<Point*>& points) const {
                     for (auto otherPoint : grid[nx][ny]) {
                         if (point->getId() != otherPoint->getId()) {
                             double distance = point->distanceTo(*otherPoint);
-                            if (distance <= maxRoadDistance) {
+                            if (distance <= maxRoadDistance) { // 确保在最大连接距离内
                                 nearbyPoints.push_back(std::make_pair(otherPoint, distance));
                             }
                         }
@@ -101,29 +103,35 @@ void MapGenerator::createRoads(Map* map, std::vector<Point*>& points) const {
             }
         }
         
-        // 优化：减少不必要的排序操作
-        if (nearbyPoints.size() > 10) { // 只有当点数较多时才排序
-            std::sort(nearbyPoints.begin(), nearbyPoints.end(),
-                     [](const std::pair<Point*, double>& a, const std::pair<Point*, double>& b) {
-                         return a.second < b.second;
-                     });
-        }
+        // 按距离对找到的邻近点进行排序
+        std::sort(nearbyPoints.begin(), nearbyPoints.end(),
+                 [](const std::pair<Point*, double>& a, const std::pair<Point*, double>& b) {
+                     return a.second < b.second;
+                 });
         
-        // 随机决定要连接的道路数量
-        int numConnections = std::min(connectionsDist(gen), static_cast<int>(nearbyPoints.size()));
+        // 随机决定要连接的道路数量 - 修改为连接到最近的N个点
+        // int numConnections = std::min(connectionsDist(gen), static_cast<int>(nearbyPoints.size()));
+        int numConnectionsToAttempt = std::min(MAX_CONNECTIONS_PER_POINT, static_cast<int>(nearbyPoints.size()));
         
         // 创建连接
         int connectionsCreated = 0;
-        for (size_t i = 0; i < nearbyPoints.size() && connectionsCreated < numConnections; i++) {
+        for (size_t i = 0; i < nearbyPoints.size() && connectionsCreated < numConnectionsToAttempt; i++) { // 确保只尝试连接最近的几个点
             Point* otherPoint = nearbyPoints[i].first;
             
-            // 检查是否已经存在连接
+            // 检查是否已经存在连接 (双向检查，避免重复创建或只考虑一个方向)
             if (map->getRoadBetweenPoints(point->getId(), otherPoint->getId()) == nullptr) {
                 // 创建新道路
                 Road* newRoad = new Road(roadId++, point, otherPoint);
                 
                 // 检查是否有不合理的交叉
+                // 优化：hasInvalidIntersection 应该只检查与 *map中已有的* 道路的交叉
+                // 而不是与 newRoads 列表中的道路交叉，因为它们尚未添加到map中
                 bool hasIntersection = false;
+                // 收集所有已在地图中的道路用于交叉检查
+                std::vector<Road*> existingMapRoads = map->getAllRoads(); 
+                if (hasInvalidIntersection(*newRoad, existingMapRoads)) { // 传递 map->getAllRoads()
+                    hasIntersection = true;
+                }
                 for (auto road : map->getAllRoads()) {
                     if (hasInvalidIntersection(*newRoad, {road})) {
                         hasIntersection = true;
